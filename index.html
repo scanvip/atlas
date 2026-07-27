@@ -9,13 +9,24 @@
         body { font-family: system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #0f0f0f; color: #e0e0e0; }
         .container { text-align: center; }
         h1 { font-size: 3rem; margin-bottom: 0.5rem; }
-        p { font-size: 1.2rem; color: #888; }
+        p { font-size: 1.2rem; color: #888; margin-bottom: 2rem; }
+        nav { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+        nav a {
+            display: inline-block; width: 220px; padding: 14px 0;
+            background: #1a1a2e; color: #e0e0e0; text-decoration: none;
+            border-radius: 8px; font-size: 1rem; border: 1px solid #333;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        nav a:hover { background: #16213e; border-color: #4a90d9; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Atlas</h1>
         <p>Witaj Przyjacielu!</p>
+        <nav>
+            <a href="map.html">Mapa Polski - Gminy</a>
+        </nav>
     </div>
 </body>
 </html>
