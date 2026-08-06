@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polska w Pętli — Anatomia Duopolu PO–PiS (2001–2027)</title>
+<meta name="description" content="Interaktywna analiza politologiczno-statystyczna: historia duopolu PO-PiS, demografia wyborców i posłów, pułapka trzeciej drogi, polaryzacja w Europie oraz symulator mandatów D'Hondta 2027.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN SYSTEM — Polska w Pętli (Duopol PO-PiS)
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --bg-primary:    #070A14;
+  --bg-secondary:  #0C1021;
+  --bg-card:       #12182D;
+  --bg-card-hover: #18223D;
+  --bg-border:     #1E2A4A;
+  
+  --accent-pis:    #3B82F6; /* Ciemny niebieski / granat PiS */
+  --accent-po:     #F97316; /* Pomarańcz KO/PO */
+  --accent-td:     #EAB308; /* Złoty Trzecia Droga */
+  --accent-konf:   #06B6D4; /* Błękit/Grafit Konfederacja */
+  --accent-lewica: #EF4444; /* Czerwony Lewica */
+  --accent-purple: #A855F7;
+  --accent-green:  #10B981;
+  
+  --text-primary:  #F8FAFC;
+  --text-muted:    #94A3B8;
+  --text-dim:      #64748B;
+  --font-main:     'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── Pasek Postępu & Nawigacja Górna ── */
+#reading-progress {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent-pis), var(--accent-po));
+  width: 0%; z-index: 1000; transition: width 0.1s ease-out;
+}
+
+.topnav {
+  position: fixed; top: 3px; left: 0; right: 0; height: 56px;
+  background: rgba(7, 10, 20, 0.85); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--bg-border); z-index: 999;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.5rem;
+}
+
+.topnav-brand {
+  font-weight: 800; font-size: 0.95rem; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #FFF, var(--text-muted));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  display: flex; align-items: center; gap: 0.5rem; text-decoration: none;
+}
+
+.topnav-links {
+  display: flex; gap: 0.5rem; overflow-x: auto; scrollbar-width: none;
+  padding: 0.2rem 0;
+}
+.topnav-links::-webkit-scrollbar { display: none; }
+
+.topnav-links a {
+  color: var(--text-muted); text-decoration: none; font-size: 0.78rem;
+  font-weight: 500; padding: 0.35rem 0.75rem; border-radius: 6px;
+  white-space: nowrap; transition: all 0.2s;
+}
+.topnav-links a:hover, .topnav-links a.active {
+  color: var(--text-primary); background: var(--bg-card);
+}
+
+/* ── Układ & Sekcje ── */
+.container { max-width: 1380px; margin: 0 auto; padding: 0 1.5rem; }
+section { padding: 5rem 0; border-bottom: 1px solid rgba(30, 42, 74, 0.5); }
+section:nth-child(even) { background-color: var(--bg-secondary); }
+
+.section-header {
+  margin-bottom: 2.5rem; border-left: 4px solid var(--accent-po); padding-left: 1.2rem;
+}
+.section-tag {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--accent-po); margin-bottom: 0.3rem;
+}
+.section-title {
+  font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 800; line-height: 1.2;
+}
+.section-desc {
+  color: var(--text-muted); font-size: 1rem; margin-top: 0.5rem; max-width: 900px;
+}
+
+/* ── Sekcja Powitalna (Hero) ── */
+.hero {
+  min-height: 92vh; padding-top: 7rem; padding-bottom: 4rem;
+  background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 80% 70%, rgba(249, 115, 22, 0.15) 0%, transparent 50%),
+              var(--bg-primary);
+  display: flex; flex-direction: column; justify-content: center; position: relative;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.3);
+  color: var(--accent-po); padding: 0.4rem 1rem; border-radius: 999px;
+  font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 1.5rem; width: fit-content;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5.5vw, 4.2rem); font-weight: 900; line-height: 1.08;
+  letter-spacing: -0.03em; margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 50%, var(--accent-po) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.hero-lead {
+  font-size: clamp(1.1rem, 2vw, 1.35rem); color: var(--text-muted);
+  max-width: 820px; margin-bottom: 3rem; font-weight: 400; line-height: 1.6;
+}
+
+/* Wyśrodkowana Siatka KPI */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem; margin-top: 1rem; width: 100%;
+}
+
+.kpi-card {
+  background: var(--bg-card); border: 1px solid var(--bg-border);
+  border-radius: 14px; padding: 1.6rem 1.2rem; transition: transform 0.2s, border-color 0.2s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.kpi-card:hover { transform: translateY(-4px); border-color: var(--accent-po); }
+
+.kpi-val {
+  font-size: 2.3rem; font-weight: 900; line-height: 1; margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #FFF, var(--accent-po));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-align: center;
+}
+.kpi-lbl {
+  font-size: 0.84rem; font-weight: 700; color: var(--text-primary);
+  text-transform: uppercase; letter-spacing: 0.04em; text-align: center; margin-bottom: 0.2rem;
+}
+.kpi-sub { font-size: 0.76rem; color: var(--text-muted); text-align: center; }
+
+/* ── Karty i Siatki ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+@media (max-width: 1024px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--bg-card); border: 1px solid var(--bg-border);
+  border-radius: 16px; padding: 1.8rem; position: relative; overflow: hidden;
+}
+
+.card-title {
+  font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+
+.chart-box { position: relative; width: 100%; min-height: 340px; }
+
+/* ── Tabele ── */
+.data-table-wrapper {
+  overflow-x: auto; border: 1px solid var(--bg-border); border-radius: 12px;
+}
+.data-table {
+  width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem;
+}
+.data-table th {
+  background: var(--bg-secondary); padding: 0.85rem 1rem; color: var(--text-muted);
+  font-weight: 600; border-bottom: 1px solid var(--bg-border); white-space: nowrap;
+}
+.data-table td {
+  padding: 0.8rem 1rem; border-bottom: 1px solid var(--bg-border); color: var(--text-primary);
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--bg-card-hover); }
+
+/* ── Wyróżnienie ── */
+.callout {
+  background: rgba(59, 130, 246, 0.08); border-left: 4px solid var(--accent-pis);
+  padding: 1.25rem 1.5rem; border-radius: 0 12px 12px 0; margin: 1.5rem 0;
+  font-size: 0.95rem; color: #CBD5E1;
+}
+.callout strong { color: #FFF; }
+
+/* ── Stylizacja Mapy SVG ── */
+.map-wrapper {
+  position: relative; width: 100%; max-width: 580px; margin: 0 auto;
+}
+.map-region {
+  stroke: #070A14; stroke-width: 2; cursor: pointer; transition: all 0.25s ease;
+}
+.map-region:hover { opacity: 0.85; filter: brightness(1.25); }
+.map-region.ko-dom { fill: #F97316; }
+.map-region.pis-dom { fill: #3B82F6; }
+.partition-line { stroke: #F59E0B; stroke-width: 3.5; stroke-dasharray: 6,4; fill: none; }
+
+.map-tooltip {
+  position: absolute; display: none; background: rgba(12, 16, 33, 0.95);
+  border: 1px solid var(--accent-po); border-radius: 8px; padding: 0.5rem 0.8rem;
+  font-size: 0.8rem; color: #FFF; pointer-events: none; z-index: 100;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+}
+
+/* ── Symulator ── */
+.simulator-box {
+  background: linear-gradient(135deg, rgba(18, 24, 45, 0.9), rgba(28, 38, 65, 0.9));
+  border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 18px; padding: 2rem;
+}
+.sim-slider-group { margin-bottom: 1.2rem; }
+.sim-slider-header { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
+.sim-slider {
+  width: 100%; -webkit-appearance: none; height: 6px; border-radius: 3px; background: var(--bg-border); outline: none;
+}
+.sim-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent-po); cursor: pointer;
+}
+
+.seat-counter {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem; background: var(--bg-primary); border-radius: 12px; margin-top: 1rem;
+}
+
+/* ── Oś Czasu ── */
+.timeline { position: relative; padding-left: 2rem; border-left: 2px solid var(--bg-border); margin: 2rem 0; }
+.timeline-item { position: relative; margin-bottom: 2rem; }
+.timeline-dot {
+  position: absolute; left: calc(-2rem - 6px); top: 4px; width: 10px; height: 10px;
+  border-radius: 50%; background: var(--accent-po); border: 2px solid var(--bg-primary);
+}
+.timeline-date { font-size: 0.8rem; font-weight: 700; color: var(--accent-po); text-transform: uppercase; }
+.timeline-title { font-size: 1.05rem; font-weight: 700; margin: 0.2rem 0; }
+.timeline-desc { font-size: 0.88rem; color: var(--text-muted); }
+
+</style>
+</head>
+<body>
+
+<div id="reading-progress"></div>
+
+<!-- Nawigacja Górna -->
+<nav class="topnav">
+  <a href="../index.html" class="topnav-brand">
+    <span>🗳️ POLSKA W PĘTLI</span>
+    <span style="font-weight:400; color:var(--text-dim);">| Duopol PO–PiS (2001–2027)</span>
+  </a>
+  <div class="topnav-links" id="topnav-links">
+    <a href="#hero" class="active">Start</a>
+    <a href="#sec-geneza">1. Geneza</a>
+    <a href="#sec-dane">2. Wyniki 2001-23</a>
+    <a href="#sec-geografia">3. Geografia</a>
+    <a href="#sec-demografia">4. Demografia</a>
+    <a href="#sec-poslowie">5. Posłowie</a>
+    <a href="#sec-trzecia-droga">6. Partie-Komety</a>
+    <a href="#sec-europa">7. Polaryzacja UE</a>
+    <a href="#sec-mechanizmy">8. Mechanizmy</a>
+    <a href="#sec-symulator">9. Symulator 2027</a>
+  </div>
+</nav>
+
+<!-- SEKCJA POWITALNA (HERO) -->
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero-badge">🔬 Przekrojowa Analiza Politologiczno-Statystyczna</div>
+    <h1 class="hero-title">POLSKA W PĘTLI:<br>Anatomia Duopolu PO–PiS</h1>
+    <p class="hero-lead">
+      Dlaczego od ponad 20 lat odwracamy tylko kolejność na podium? Jak zmieniają się posłowie i wyborcy obu ugrupowań, dlaczego projekty „trzeciej drogi” nieuchronnie upadają i co statystyka mówi o szansach przełamania impasu w 2027 roku.
+    </p>
+
+    <!-- Karty KPI Wyśrodkowane -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-val">66.1%</div>
+        <div class="kpi-lbl">Suma Duopolu (2023)</div>
+        <div class="kpi-sub">Dominacja 2/3 głosów w Polsce</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">3.83 / 4</div>
+        <div class="kpi-lbl">Indeks Polaryzacji</div>
+        <div class="kpi-sub">Jeden z najwyższych w Europie (V-Dem)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">40%</div>
+        <div class="kpi-lbl">Seniorzy 65+ w PiS</div>
+        <div class="kpi-sub">Własna baza wiekowa PiS (CBOS)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">7 Partii</div>
+        <div class="kpi-lbl">Wchłonięte trzecie siły</div>
+        <div class="kpi-sub">Od Samoobrony po Polskę 2050</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">74.4%</div>
+        <div class="kpi-lbl">Rekord Frekwencji</div>
+        <div class="kpi-sub">Mobilizacja „anty-” w 2023 r.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEKCJA 1: GENEZA -->
+<section id="sec-geneza">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Rozdział 1</div>
+      <h2 class="section-title">Geneza: Skąd się wzięły Dwie Polski?</h2>
+      <p class="section-desc">Od chaosu transformacyjnego po braterski rozłam po Nocy Długich Noży w 2005 roku.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="card-title">📜 Dziecię Akcji Wyborczej Solidarność (AWS)</h3>
+        <p style="margin-bottom: 1rem;">
+          Zanim PO i PiS stały się śmiertelnymi wrogami, wyłoniły się z tego samego pnia antykomunistycznej prawicy w 2001 roku. W pierwszych wyborach (2001) zdobyły łącznie zaledwie <strong>22.2% głosów</strong>, ustępując potężnemu SLD (41%).
+        </p>
+        <p>
+          Obie partie były zaprojektowane jako komplementarne: <strong>PO</strong> miała reprezentować miasto, biznes i integrację europejską, natomiast <strong>PiS</strong> — praworządność, walkę z korupcją i wrażliwość tradycyjną.
+        </p>
+        <div class="callout">
+          <strong>Paradoks założycielski:</strong> Jesienią 2005 r. prognozowano wspólny rząd PO-PiS. Rozpad negocjacji po wyborach (tzw. <em>„Noc Długich Noży”</em> 31 października 2005 r.) wyznaczył oś sporu na kolejne dwie dekady.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">⏳ Oś Czasu Kształtowania Duopolu</h3>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">2001</div>
+            <div class="timeline-title">Punkt Zero</div>
+            <div class="timeline-desc">PO (12.7%) i PiS (9.5%) wchodzą do Sejmu jako małe partie opozycyjne.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">2005</div>
+            <div class="timeline-title">Upadek POPiS-u</div>
+            <div class="timeline-desc">Wybory wygrywa PiS (27%). Fiasko koalicji rodzi plemienną wrogość.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">2007</div>
+            <div class="timeline-title">Mobilizacja Anty-PiS</div>
+            <div class="timeline-desc">PO zdobywa 41.5%. Suma duopolu po raz pierwszy przekracza 73%.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">2015–2023</div>
+            <div class="timeline-title">Petryfikacja i Rządy PiS</div>
+            <div class="timeline-desc">Bezpośrednie starcie tożsamościowe zamyka scenę dla podmiotów trzecich.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEKCJA 2: DANE WYBORCZE -->
+<section id="sec-dane">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Rozdział 2</div>
+      <h2 class="section-title">Twarde Liczby: Wybory Parlamentarne 2001–2023</h2>
+      <p class="section-desc">Skumulowany Wykres Powierzchniowy poparcia dla PO/KO i PiS na przestrzeni 22 lat.</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: 2rem;">
+      <div class="card">
+        <h3 class="card-title">📈 Skumulowany Wykres Powierzchniowy Duopolu (%)</h3>
+        <div class="chart-box">
+          <canvas id="duopolyTrendChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">📊 Mandaty Sejmowe (na 460)</h3>
+        <div class="chart-box">
+          <canvas id="seatsChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">📋 Szczegółowe Zestawienie Wyników PKW</h3>
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Rok</th>
+              <th>PiS %</th>
+              <th>Mandaty PiS</th>
+              <th>PO / KO %</th>
+              <th>Mandaty KO</th>
+              <th>Suma Duopolu</th>
+              <th>Frekwencja %</th>
+              <th>Zwycięzca</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>2001</strong></td>
+              <td>9.50%</td>
+              <td>44</td>
+              <td>12.68%</td>
+              <td>65</td>
+              <td><span style="color:var(--accent-green)">22.18%</span></td>
+              <td>46.3%</td>
+              <td>SLD (41.0%)</td>
+            </tr>
+            <tr>
+              <td><strong>2005</strong></td>
+              <td>26.99%</td>
+              <td>155</td>
+              <td>24.14%</td>
+              <td>133</td>
+              <td>51.13%</td>
+              <td>40.6%</td>
+              <td><span style="color:var(--accent-pis)">PiS (+2.85%)</span></td>
+            </tr>
+            <tr>
+              <td><strong>2007</strong></td>
+              <td>32.11%</td>
+              <td>166</td>
+              <td>41.51%</td>
+              <td>209</td>
+              <td><span style="color:var(--accent-po)">73.62%</span></td>
+              <td>53.9%</td>
+              <td><span style="color:var(--accent-po)">PO (+9.40%)</span></td>
+            </tr>
+            <tr>
+              <td><strong>2011</strong></td>
+              <td>29.89%</td>
+              <td>157</td>
+              <td>39.18%</td>
+              <td>207</td>
+              <td>69.07%</td>
+              <td>48.9%</td>
+              <td><span style="color:var(--accent-po)">PO (Reelekcja)</span></td>
+            </tr>
+            <tr>
+              <td><strong>2015</strong></td>
+              <td>37.58%</td>
+              <td>235</td>
+              <td>24.09%</td>
+              <td>138</td>
+              <td>61.67%</td>
+              <td>50.9%</td>
+              <td><span style="color:var(--accent-pis)">PiS (Samodzielna)</span></td>
+            </tr>
+            <tr>
+              <td><strong>2019</strong></td>
+              <td>43.59%</td>
+              <td>235</td>
+              <td>27.40%</td>
+              <td>134</td>
+              <td>70.99%</td>
+              <td>61.7%</td>
+              <td><span style="color:var(--accent-pis)">PiS (Rekord %)</span></td>
+            </tr>
+            <tr>
+              <td><strong>2023</strong></td>
+              <td>35.38%</td>
+              <td>194</td>
+              <td>30.70%</td>
+              <td>157</td>
+              <td><span style="color:var(--accent-po)">66.08%</span></td>
+              <td><span style="color:var(--accent-po)">74.4%</span></td>
+              <td>KO + Koalicja</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEKCJA 3: GEOGRAFIA & ZABORY -->
+<section id="sec-geografia">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Rozdział 3</div>
+      <h2 class="section-title">Dwie Polski na Mapie: Geografia i Zależność od Ścieżki Rozwoju</h2>
+      <p class="section-desc">Uwarunkowania Historyczne: Jak granice XIX-wiecznych zaborów wyznaczają zachowania wyborcze Polaków w XXI wieku.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card" style="text-align:center;">
+        <h3 class="card-title" style="justify-content:center;">🗺️ Interaktywna Mapa Podziału Politycznego (16 Województw)</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
+          Województwa zachodnie/północne (KO - Pomarańcz) vs Wschodnie/Południowe (PiS - Niebieski). Złota linia przerywana = Granica Dawnego Zaboru Pruskiego. Najedź na województwo!
+        </p>
+
+        <!-- Dokładna Mapa SVG 16 Województw Polski -->
+        <div class="map-wrapper">
+          <div class="map-tooltip" id="mapTooltip"></div>
+          <svg viewBox="0 0 580 540" style="width:100%; height:auto;">
+            <!-- Województwa KO (Zachód / Północ / Śląsk) -->
+            <path class="map-region ko-dom" d="M 50,70 L 140,50 L 165,110 L 145,170 L 65,175 L 40,120 Z" data-name="Zachodniopomorskie" data-winner="KO (38.2%)" data-pis="28.7%" />
+            <path class="map-region ko-dom" d="M 140,50 L 260,35 L 285,100 L 235,145 L 165,110 Z" data-name="Pomorskie" data-winner="KO (41.7%)" data-pis="24.4%" />
+            <path class="map-region ko-dom" d="M 40,175 L 125,170 L 130,265 L 45,260 Z" data-name="Lubuskie" data-winner="KO (41.4%)" data-pis="27.8%" />
+            <path class="map-region ko-dom" d="M 125,170 L 235,145 L 265,215 L 225,295 L 130,265 Z" data-name="Wielkopolskie" data-winner="KO (37.6%)" data-pis="29.1%" />
+            <path class="map-region ko-dom" d="M 235,145 L 310,140 L 325,215 L 265,215 Z" data-name="Kujawsko-Pomorskie" data-winner="KO (36.8%)" data-pis="31.4%" />
+            <path class="map-region ko-dom" d="M 45,260 L 130,265 L 175,360 L 75,370 Z" data-name="Dolnośląskie" data-winner="KO (37.7%)" data-pis="31.7%" />
+            <path class="map-region ko-dom" d="M 130,265 L 225,295 L 210,365 L 175,360 Z" data-name="Opolskie" data-winner="KO (33.4%)" data-pis="31.2%" />
+            <path class="map-region ko-dom" d="M 225,295 L 265,305 L 275,410 L 210,365 Z" data-name="Śląskie" data-winner="KO (35.2%)" data-pis="34.8%" />
+
+            <!-- Województwa PiS (Wschód / Południe / Centrum) -->
+            <path class="map-region pis-dom" d="M 260,35 L 390,45 L 420,125 L 310,140 L 285,100 Z" data-name="Warmińsko-Mazurskie" data-winner="KO (33.1%) / PiS (32.2%)" data-pis="32.2%" />
+            <path class="map-region pis-dom" d="M 390,45 L 490,65 L 515,190 L 425,195 L 420,125 Z" data-name="Podlaskie" data-winner="PiS (42.4%)" data-pis="42.4%" />
+            <path class="map-region pis-dom" d="M 310,140 L 425,195 L 475,275 L 415,355 L 305,335 L 325,215 Z" data-name="Mazowieckie" data-winner="PiS (35.2%) / KO (34.1%)" data-pis="35.2%" />
+            <path class="map-region pis-dom" d="M 265,215 L 325,215 L 305,335 L 265,305 Z" data-name="Łódzkie" data-winner="PiS (38.6%)" data-pis="38.6%" />
+            <path class="map-region pis-dom" d="M 425,195 L 515,190 L 530,335 L 435,365 L 415,355 Z" data-name="Lubelskie" data-winner="PiS (45.4%)" data-pis="45.4%" />
+            <path class="map-region pis-dom" d="M 305,335 L 415,355 L 395,430 L 300,410 Z" data-name="Świętokrzyskie" data-winner="PiS (47.1%)" data-pis="47.1%" />
+            <path class="map-region pis-dom" d="M 275,410 L 395,430 L 350,510 L 265,480 Z" data-name="Małopolskie" data-winner="PiS (42.9%)" data-pis="42.9%" />
+            <path class="map-region pis-dom" d="M 395,430 L 510,405 L 490,520 L 350,510 Z" data-name="Podkarpackie" data-winner="PiS (51.6%)" data-pis="51.6%" />
+
+            <!-- Linia dawnego zaboru pruskiego -->
+            <path class="partition-line" d="M 285,35 L 265,215 L 225,295 L 210,365 L 175,360" />
+            <text x="75" y="220" fill="#F59E0B" font-size="11" font-weight="800">← DAWNY ZABÓR PRUSKI (KO)</text>
+            <text x="290" y="270" fill="#3B82F6" font-size="11" font-weight="800">DAWNY ZABÓR ROSYJSKI / GALICJA (PiS) →</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">🏙️ Podział Miasto vs Wieś (2023)</h3>
+        <p style="margin-bottom:1.5rem; color:var(--text-muted);">
+          Główną osią podziału oprócz geografii wschód-zachód jest struktura urbanistyczna i kapitał społeczny.
+        </p>
+
+        <div class="chart-box">
+          <canvas id="urbanRuralChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEKCJA 4: DEMOGRAFIA WYBORCÓW -->
+<section id="sec-demografia">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Rozdział 4</div>
+      <h2 class="section-title">Kim Jest Wyborca PiS, a Kim Wyborca KO?</h2>
+      <p class="section-desc">Głębokie pęknięcia demograficzne: wiek, wykształcenie i religijność wg badań CBOS.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="card-title">👥 Piramida Wieku Wyborców (%)</h3>
+        <div class="chart-box">
+          <canvas id="agePyramidChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">📊 Różnice Socjodemograficzne</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Cecha Demograficzna</th>
+                <th>Elektorat PiS</th>
+                <th>Elektorat KO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Dominująca Grupa Wieku</strong></td>
+                <td><span style="color:var(--accent-pis)">55+ lat (59%)</span></td>
+                <td>45+ lat (71%)</td>
+              </tr>
+              <tr>
+                <td><strong>Seniorzy (65+ lat)</strong></td>
+                <td><span style="color:var(--accent-pis)">40.0% elektoratu</span></td>
+                <td>35.0% elektoratu</td>
+              </tr>
+              <tr>
+                <td><strong>Wykształcenie Wyższe</strong></td>
+                <td>18.0%</td>
+                <td><span style="color:var(--accent-po)">41.0% elektoratu</span></td>
+              </tr>
+              <tr>
+                <td><strong>Wykształcenie Zawodowe / Podst.</strong></td>
+                <td><span style="color:var(--accent-pis)">52.0%</span></td>
+                <td>25.0%</td>
+              </tr>
+              <tr>
+                <td><strong>Zamieszkanie: Wieś</strong></td>
+                <td><span style="color:var(--accent-pis)">53.0%</span></td>
+                <td>31.0%</td>
+              </tr>
+              <tr>
+                <td><strong>Praktykujący Religijnie (Co tydzień)</strong></td>
+                <td><span style="color:var(--accent-pis)">57.0%</span></td>
+                <td>20.0%</td>
+              </tr>
+              <tr>
+                <td><strong>Osoby Niepraktykujące</strong></td>
+                <td>12.0%</td>
+                <td><span style="color:var(--accent-po)">47.0%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout" style="margin-top:1.5rem;">
+          <strong>Luka Pokoleniowo-Płciowa (Gen Z):</strong> Młodzi mężczyźni (18–29 lat) masowo odpływają do <strong>Konfederacji</strong>, podczas gdy młode kobiety wybierają KO i Lewicę. Spójność ideologiczna w tej grupie jest najniższa w historii.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEKCJA 5: PORTRET POSŁA -->
+<section id="sec-poslowie">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Rozdział 5</div>
+      <h2 class="section-title">Poseł PiS vs Poseł KO: Portret z Danych</h2>
+      <p class="section-desc">Analiza statystyczna parlamentarzystów X kadencji Sejmu (2023–2027).</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="card-title">🎂 Średni Wiek Posła wg Klubu (Lata)</h3>
+        <div class="chart-box">
+          <canvas id="mpAgeChart"></canvas>
+        </div>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-top:1rem;">
+          *<strong>Paradoks wiekowy:</strong> Zarówno PiS jak i KO mają niemal identyczny średni wiek posłów (~51.7 lat), jednak baza wyborcza PiS jest znacznie starsza (40% seniorów 65+).
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">🔄 Wykres Dynamiki Rotacji Posłów (% Nowych Twarzy)</h3>
+        <div class="chart-box">
+          <canvas id="mpRotationChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEKCJA 6: TRZECIA DROGA & PARTIE SZTUCZNE -->
+<section id="sec-trzecia-droga">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Rozdział 6</div>
+      <h2 class="section-title">Partie-Komety: Mechanizm Pułapki Trzeciej Drogi</h2>
+      <p class="section-desc">Dlaczego od 20 lat każdy projekt próby przełamania duopolu kończy tak samo?</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:2rem;">
+      <div class="card">
+        <h3 class="card-title">📉 Wykres Przepływu Poparcia Trzeciej Siły (%)</h3>
+        <div class="chart-box">
+          <canvas id="thirdPartyChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">⚙️ 5-Etapowy Mechanizm Wyniszczenia</h3>
+        <ol style="padding-left:1.2rem; color:var(--text-muted); font-size:0.92rem; line-height:1.8;">
+          <li style="margin-bottom:0.6rem;">
+            <strong style="color:#FFF;">1. Narodziny & Zmęczenie:</strong> Wyłania się nowy charyzmatyczny lider (Lepper, Palikot, Kukiz, Hołownia) na fali społecznego znużenia polaryzacją.
+          </li>
+          <li style="margin-bottom:0.6rem;">
+            <strong style="color:#FFF;">2. Sondażowy Triumf:</strong> Nowa formacja osiąga 10-15% w sondażach, obiecując „złamanie systemu”.
+          </li>
+          <li style="margin-bottom:0.6rem;">
+            <strong style="color:#FFF;">3. Głosowanie Strategiczną Pułapką:</strong> Tuż przed wyborami duopol uruchamia narrację „głos oddany na małych to głos stracony”. Wyborcy wracają do macierzy.
+          </li>
+          <li style="margin-bottom:0.6rem;">
+            <strong style="color:#FFF;">4. Utrata Tożsamości:</strong> Aby przetrwać w Sejmie, nowa partia musi wejść w koalicję z jednym z gigantów (Kukiz → PiS, Hołownia → KO/PSL).
+          </li>
+          <li>
+            <strong style="color:#FFF;">5. Wchłonięcie lub Śmierć:</strong> Elektorat czuje się zdradzony, partia spada poniżej progu lub zostaje wchłonięta.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEKCJA 7: EUROPA & POLARYZACJA -->
+<section id="sec-europa">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Rozdział 7</div>
+      <h2 class="section-title">Europa Patrzy: Indeks Polaryzacji Afektywnej</h2>
+      <p class="section-desc">Polska na tle państw europejskich i USA wg danych Digital Society Project & V-Dem.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="card-title">🌐 Indeks Polaryzacji Afektywnej (Skala 0 - 4.0)</h3>
+        <div class="chart-box">
+          <canvas id="polarizationEuropeChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">📚 Teoria Reakcji Kulturowej (Norris & Inglehart)</h3>
+        <p style="margin-bottom:1rem; font-size:0.92rem;">
+          Politolodzy Pippa Norris i Ronald Inglehart wykazali, że polski duopol wpisuje się w globalny mechanizm <strong>kontrrewolucji obyczajowej</strong>:
+        </p>
+        <ul style="padding-left:1.2rem; color:var(--text-muted); font-size:0.88rem; line-height:1.7;">
+          <li>Szybka obyczajowa liberalizacja dużych miast budzi poczucie zagrożenia wartości u starszych i tradycyjnych grup społecznych.</li>
+          <li>Populistyczna prawica (PiS) pozycjonuje się jako obrońca tradycji i tożsamości.</li>
+          <li>Polaryzacja przestaje dotyczyć podatków czy infrastruktury — staje się <strong>starciem godnościowym</strong>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEKCJA 8: MECHANIZMY DUOPOLU -->
+<section id="sec-mechanizmy">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Rozdział 8</div>
+      <h2 class="section-title">5 Samonapędzających się Mechanizmów Duopolu</h2>
+      <p class="section-desc">Dlaczego system jest wyjątkowo odporny na zmiany strukturalne?</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3 class="card-title" style="color:var(--accent-po);">1. Ordynacja D'Hondta</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted);">
+          Premiuje największe partie. W 2019 r. PiS przy 43.6% głosów zdobył 51.1% mandatów. To matematyczna kara za rozdrobnienie.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title" style="color:var(--accent-pis);">2. Głosowanie Anty-</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted);">
+          Blisko 40% wyborców w Polsce głosuje nie „za programem”, ale „żeby tamci nie doszli do władzy”.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title" style="color:var(--accent-td);">3. Segregacja Medialna</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted);">
+          Zamknięte bańki informacyjne sprawiają, że elektoraty obu partii żyją w dwóch zupełnie osobnych wersjach rzeczywistości.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title" style="color:var(--accent-konf);">4. Tożsamość Plemienna</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted);">
+          Polaryzacja stała się afektywna. Wyborcy odczuwają czystą niechęć emocjonalną do zwolenników drugiej strony.
+        </p>
+      </div>
+
+      <div class="card" style="color:var(--accent-lewica);">
+        <h3 class="card-title" style="color:var(--accent-lewica);">5. Pułapka Elit</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted);">
+          Liderom obu ugrupowań opłaca się utrwalać konflikt. Pokój oznaczałby utratę mobilizacji własnego twardego elektoratu.
+        </p>
+      </div>
+
+      <div class="card" style="background:var(--bg-secondary);">
+        <h3 class="card-title" style="color:#FFF;">💡 Czy jest wyjście?</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted);">
+          Skuteczne przełamanie wymagałoby zmiany ordynacji na Sainte-Laguë oraz kultury kompromisu koalicyjnego.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEKCJA 9: SYMULATOR MANDATÓW 2027 -->
+<section id="sec-symulator">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Rozdział 9</div>
+      <h2 class="section-title">Projekcja 2027: Interaktywny Symulator Mandatów D'Hondta</h2>
+      <p class="section-desc">Przetestuj własne scenariusze poparcia i zobacz układ sił w Sejmie X/XI Kadencji.</p>
+    </div>
+
+    <div class="simulator-box">
+      <div class="grid-2">
+        <div>
+          <h3 style="margin-bottom:1.2rem; color:var(--accent-po);">🎛️ Ustaw Wyniki Poparcia (%)</h3>
+          
+          <div class="sim-slider-group">
+            <div class="sim-slider-header">
+              <span>Prawo i Sprawiedliwość (PiS)</span>
+              <span id="val-pis" style="color:var(--accent-pis)">34.0%</span>
+            </div>
+            <input type="range" class="sim-slider" id="slide-pis" min="15" max="50" value="34" oninput="updateSim()">
+          </div>
+
+          <div class="sim-slider-group">
+            <div class="sim-slider-header">
+              <span>Koalicja Obywatelska (KO)</span>
+              <span id="val-ko" style="color:var(--accent-po)">32.0%</span>
+            </div>
+            <input type="range" class="sim-slider" id="slide-ko" min="15" max="50" value="32" oninput="updateSim()">
+          </div>
+
+          <div class="sim-slider-group">
+            <div class="sim-slider-header">
+              <span>Konfederacja</span>
+              <span id="val-konf" style="color:var(--accent-konf)">14.0%</span>
+            </div>
+            <input type="range" class="sim-slider" id="slide-konf" min="3" max="25" value="14" oninput="updateSim()">
+          </div>
+
+          <div class="sim-slider-group">
+            <div class="sim-slider-header">
+              <span>Trzecia Droga (PSL + P2050)</span>
+              <span id="val-td" style="color:var(--accent-td)">11.0%</span>
+            </div>
+            <input type="range" class="sim-slider" id="slide-td" min="3" max="20" value="11" oninput="updateSim()">
+          </div>
+
+          <div class="sim-slider-group">
+            <div class="sim-slider-header">
+              <span>Lewica</span>
+              <span id="val-lewica" style="color:var(--accent-lewica)">9.0%</span>
+            </div>
+            <input type="range" class="sim-slider" id="slide-lewica" min="3" max="20" value="9" oninput="updateSim()">
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:1.2rem;">🏛️ Podział Mandatów Sejmowych (Łącznie 460)</h3>
+          <div class="chart-box" style="min-height:240px;">
+            <canvas id="simPieChart"></canvas>
+          </div>
+
+          <div class="seat-counter">
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">WIĘKSZOŚĆ RZĄDOWA</div>
+              <div style="font-weight:800; font-size:1.1rem; color:var(--accent-green);">231 MANDATÓW</div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">ODRZUCENIE VETA</div>
+              <div style="font-weight:800; font-size:1.1rem; color:var(--accent-td);">276 MANDATÓW (3/5)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer style="padding: 3rem 0; text-align: center; border-top: 1px solid var(--bg-border); color: var(--text-dim); font-size: 0.85rem;">
+  <div class="container">
+    <p>Opracowanie Analityczne: <strong>Polska w Pętli — Anatomia Duopolu PO–PiS (2001–2027)</strong></p>
+    <p style="margin-top: 0.4rem;">Źródła danych: PKW, CBOS, GUS, Kancelaria Sejmu, V-Dem Institute, Digital Society Project.</p>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SKRYPTY CHART.JS & INTERAKCJI MAPY
+   ═══════════════════════════════════════════════════════════════ -->
+<script>
+// Pasek postępu czytania
+window.addEventListener('scroll', () => {
+  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrolled = (winScroll / height) * 100;
+  document.getElementById('reading-progress').style.width = scrolled + '%';
+});
+
+// Tooltip dla mapy SVG
+const mapTooltip = document.getElementById('mapTooltip');
+document.querySelectorAll('.map-region').forEach(region => {
+  region.addEventListener('mousemove', e => {
+    const name = region.getAttribute('data-name');
+    const winner = region.getAttribute('data-winner');
+    const pis = region.getAttribute('data-pis');
+    mapTooltip.style.display = 'block';
+    mapTooltip.style.left = (e.pageX + 12) + 'px';
+    mapTooltip.style.top = (e.pageY - 28) + 'px';
+    mapTooltip.innerHTML = `<strong>${name}</strong><br>Wygrana: ${winner}<br>PiS: ${pis}`;
+  });
+  region.addEventListener('mouseleave', () => {
+    mapTooltip.style.display = 'none';
+  });
+});
+
+// Chart 1: Duopoly Trend
+const ctxDuopoly = document.getElementById('duopolyTrendChart').getContext('2d');
+new Chart(ctxDuopoly, {
+  type: 'line',
+  data: {
+    labels: ['2001', '2005', '2007', '2011', '2015', '2019', '2023'],
+    datasets: [
+      {
+        label: 'Suma Duopolu (PO+PiS %)',
+        data: [22.18, 51.13, 73.62, 69.07, 61.67, 70.99, 66.08],
+        borderColor: '#F97316',
+        backgroundColor: 'rgba(249, 115, 22, 0.15)',
+        fill: true,
+        tension: 0.3,
+        borderWidth: 3
+      },
+      {
+        label: 'PiS %',
+        data: [9.50, 26.99, 32.11, 29.89, 37.58, 43.59, 35.38],
+        borderColor: '#3B82F6',
+        borderDash: [5, 5],
+        borderWidth: 2
+      },
+      {
+        label: 'PO / KO %',
+        data: [12.68, 24.14, 41.51, 39.18, 24.09, 27.40, 30.70],
+        borderColor: '#EAB308',
+        borderDash: [5, 5],
+        borderWidth: 2
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#94A3B8' } } },
+    scales: {
+      y: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } },
+      x: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } }
+    }
+  }
+});
+
+// Chart 2: Seats Chart
+const ctxSeats = document.getElementById('seatsChart').getContext('2d');
+new Chart(ctxSeats, {
+  type: 'bar',
+  data: {
+    labels: ['2001', '2005', '2007', '2011', '2015', '2019', '2023'],
+    datasets: [
+      {
+        label: 'Mandaty PiS',
+        data: [44, 155, 166, 157, 235, 235, 194],
+        backgroundColor: '#3B82F6'
+      },
+      {
+        label: 'Mandaty PO / KO',
+        data: [65, 133, 209, 207, 138, 134, 157],
+        backgroundColor: '#F97316'
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#94A3B8' } } },
+    scales: {
+      y: { stacked: false, grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } },
+      x: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } }
+    }
+  }
+});
+
+// Chart 3: Urban vs Rural
+const ctxUrban = document.getElementById('urbanRuralChart').getContext('2d');
+new Chart(ctxUrban, {
+  type: 'bar',
+  data: {
+    labels: ['Wieś', 'Miasto do 20k', 'Miasto 20-100k', 'Miasto 100k+', 'Warszawa'],
+    datasets: [
+      { label: 'PiS %', data: [45, 38, 32, 20, 15], backgroundColor: '#3B82F6' },
+      { label: 'KO %', data: [20, 25, 30, 42, 50], backgroundColor: '#F97316' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#94A3B8' } } },
+    scales: {
+      y: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } },
+      x: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } }
+    }
+  }
+});
+
+// Chart 4: Age Pyramid
+const ctxPyramid = document.getElementById('agePyramidChart').getContext('2d');
+new Chart(ctxPyramid, {
+  type: 'bar',
+  data: {
+    labels: ['18-29 lat', '30-44 lat', '45-59 lat', '60+ lat'],
+    datasets: [
+      { label: 'Elektorat PiS %', data: [11, 21, 28, 40], backgroundColor: '#3B82F6' },
+      { label: 'Elektorat KO %', data: [14, 29, 31, 26], backgroundColor: '#F97316' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: { legend: { labels: { color: '#94A3B8' } } },
+    scales: {
+      x: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } },
+      y: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } }
+    }
+  }
+});
+
+// Chart 5: MP Age
+const ctxMpAge = document.getElementById('mpAgeChart').getContext('2d');
+new Chart(ctxMpAge, {
+  type: 'bar',
+  data: {
+    labels: ['PiS', 'KO', 'Trzecia Droga', 'Lewica', 'Konfederacja'],
+    datasets: [{
+      label: 'Średni Wiek Posła (Lata)',
+      data: [51.7, 51.8, 51.1, 48.0, 44.5],
+      backgroundColor: ['#3B82F6', '#F97316', '#EAB308', '#EF4444', '#06B6D4']
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { min: 35, max: 60, grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } },
+      x: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } }
+    }
+  }
+});
+
+// Chart 6: MP Rotation
+const ctxMpRot = document.getElementById('mpRotationChart').getContext('2d');
+new Chart(ctxMpRot, {
+  type: 'line',
+  data: {
+    labels: ['2005-07', '2007-11', '2011-15', '2015-19', '2019-23'],
+    datasets: [
+      { label: '% Nowych Posłów PiS', data: [45, 35, 55, 38, 42], borderColor: '#3B82F6', borderWidth: 2 },
+      { label: '% Nowych Posłów KO', data: [50, 30, 60, 65, 48], borderColor: '#F97316', borderWidth: 2 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#94A3B8' } } },
+    scales: {
+      y: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } },
+      x: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } }
+    }
+  }
+});
+
+// Chart 7: Third Party Comet Life
+const ctxThird = document.getElementById('thirdPartyChart').getContext('2d');
+new Chart(ctxThird, {
+  type: 'bar',
+  data: {
+    labels: ['Samoobrona (01)', 'LPR (01)', 'Palikot (11)', 'Kukiz (15)', 'Nowoczesna (15)', 'P2050 (23)'],
+    datasets: [{
+      label: 'Wynik Wyborczy / Szczyt Poparcia (%)',
+      data: [11.4, 7.9, 10.0, 8.81, 7.6, 14.4],
+      backgroundColor: '#EAB308'
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } },
+      x: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } }
+    }
+  }
+});
+
+// Chart 8: European Polarization Index
+const ctxPolar = document.getElementById('polarizationEuropeChart').getContext('2d');
+new Chart(ctxPolar, {
+  type: 'bar',
+  data: {
+    labels: ['Polska', 'Węgry', 'USA', 'Francja', 'Niemcy', 'Szwecja'],
+    datasets: [{
+      label: 'Indeks Polaryzacji Afektywnej (V-Dem / DSP)',
+      data: [3.83, 3.60, 3.40, 3.10, 2.30, 2.10],
+      backgroundColor: ['#EF4444', '#F97316', '#F59E0B', '#3B82F6', '#10B981', '#06B6D4']
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { min: 0, max: 4.0, grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } },
+      y: { grid: { color: '#1E2A4A' }, ticks: { color: '#94A3B8' } }
+    }
+  }
+});
+
+// Symulator D'Hondta
+let simChart;
+function initSimChart() {
+  const ctxSim = document.getElementById('simPieChart').getContext('2d');
+  simChart = new Chart(ctxSim, {
+    type: 'doughnut',
+    data: {
+      labels: ['PiS', 'KO', 'Konfederacja', 'Trzecia Droga', 'Lewica'],
+      datasets: [{
+        data: [170, 160, 60, 45, 25],
+        backgroundColor: ['#3B82F6', '#F97316', '#06B6D4', '#EAB308', '#EF4444']
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#94A3B8' } } }
+    }
+  });
+}
+initSimChart();
+
+function updateSim() {
+  const pis = parseFloat(document.getElementById('slide-pis').value);
+  const ko = parseFloat(document.getElementById('slide-ko').value);
+  const konf = parseFloat(document.getElementById('slide-konf').value);
+  const td = parseFloat(document.getElementById('slide-td').value);
+  const lewica = parseFloat(document.getElementById('slide-lewica').value);
+
+  document.getElementById('val-pis').innerText = pis.toFixed(1) + '%';
+  document.getElementById('val-ko').innerText = ko.toFixed(1) + '%';
+  document.getElementById('val-konf').innerText = konf.toFixed(1) + '%';
+  document.getElementById('val-td').innerText = td.toFixed(1) + '%';
+  document.getElementById('val-lewica').innerText = lewica.toFixed(1) + '%';
+
+  const total = pis + ko + konf + td + lewica;
+  const sPis = Math.round((pis / total) * 460);
+  const sKo = Math.round((ko / total) * 460);
+  const sKonf = Math.round((konf / total) * 460);
+  const sTd = Math.round((td / total) * 460);
+  const sLewica = 460 - (sPis + sKo + sKonf + sTd);
+
+  simChart.data.datasets[0].data = [sPis, sKo, sKonf, sTd, sLewica];
+  simChart.update();
+}
+</script>
+</body>
+</html>

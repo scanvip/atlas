@@ -327,6 +327,16 @@
     transform: translateX(6px);
   }
 
+  
+  .card-duopol::before {
+    background: linear-gradient(90deg, #F97316, #3B82F6, #EAB308);
+  }
+  .card-duopol:hover .card-cta {
+    background: linear-gradient(135deg, #F97316, #2563EB) !important;
+    border-color: transparent !important;
+    color: #FFF !important;
+  }
+
   /* ── FOOTER ── */
   .portal-footer {
     text-align: center;
@@ -375,9 +385,6 @@
       <div class="brand-badge" style="margin-bottom:0;">
         <span>🌐 System Analiz Przestrzennych · Atlas Polska</span>
       </div>
-      <a href="mailto:scanvip@gmail.com" class="brand-badge" style="margin-bottom:0;background:rgba(249,115,22,0.15);border-color:rgba(249,115,22,0.4);color:#FBA76A;text-decoration:none;transition:all 0.2s ease;" onmouseover="this.style.background='rgba(249,115,22,0.3)';this.style.color='#FFF';" onmouseout="this.style.background='rgba(249,115,22,0.15)';this.style.color='#FBA76A';">
-        <span>✉️ Kontakt: scanvip@gmail.com</span>
-      </a>
     </div>
     <h1 class="portal-title">Wybierz Analizę Badawczą</h1>
     <p class="portal-subtitle">
@@ -438,6 +445,32 @@
       </div>
       <div class="card-cta">
         <span>Otwórz Analizę Demograficzną</span>
+        <span class="cta-arrow-icon">➔</span>
+      </div>
+    </a>
+
+  
+    <!-- KARTA 3: POLSKA W PĘTLI / DUOPOL PO-PIS -->
+    <a href="wybory_ob/index.html" class="glass-card card-duopol" style="--card-theme:#F97316;">
+      <div>
+        <div class="card-header">
+          <div class="card-icon">🏛️</div>
+          <div class="card-tag" style="color:#F97316;">Anatomia Duopolu · 2001–2027</div>
+          <h2 class="card-title">Polska w Pętli PO–PiS</h2>
+        </div>
+        <p class="card-desc">
+          Dlaczego od 20 lat Polska trwa w podziale dwóch głównych sił? Przekrojowa analiza demografii wyborców i posłów,
+          wchłaniania partii trzeciej drogi, cienia zaborów oraz symulator mandatów D'Hondta 2027.
+        </p>
+        <div class="card-metrics">
+          <div class="metric-pill">📊 <strong>66.1%</strong> Dominacja Duopolu</div>
+          <div class="metric-pill">🌐 <strong>3.83/4</strong> Polaryzacja UE</div>
+          <div class="metric-pill">👥 <strong>40%</strong> Seniorzy w PiS</div>
+          <div class="metric-pill">🧮 <strong>Symulator D'Hondta</strong> 2027</div>
+        </div>
+      </div>
+      <div class="card-cta" style="background: linear-gradient(135deg, rgba(249,115,22,0.2) 0%, rgba(59,130,246,0.2) 100%); border: 1px solid rgba(249,115,22,0.4); color: #FBA76A;">
+        <span>Otwórz Analizę Duopolu</span>
         <span class="cta-arrow-icon">➔</span>
       </div>
     </a>
