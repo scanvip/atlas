@@ -346,6 +346,15 @@
     color: #FFF !important;
   }
 
+  .card-sacral::before {
+    background: linear-gradient(90deg, #F59E0B, #A855F7, #FBBF24);
+  }
+  .card-sacral:hover .card-cta {
+    background: linear-gradient(135deg, #F59E0B, #A855F7) !important;
+    border-color: transparent !important;
+    color: #FFF !important;
+  }
+
   /* ── FOOTER ── */
   .portal-footer {
     text-align: center;
@@ -510,10 +519,36 @@
       </div>
     </a>
 
+    <!-- KARTA 5: ATLAS SAKRALNY -->
+    <a href="sakralny/index.html" class="glass-card card-sacral">
+      <div>
+        <div class="card-header">
+          <div class="card-icon">⛪</div>
+          <div class="card-tag" style="color:#FBBF24;">Geografia sakralna · OSM 2026</div>
+          <h2 class="card-title">Atlas Sakralny Polski</h2>
+        </div>
+        <p class="card-desc">
+          Mapa 23 tysięcy miejsc kultu religijnego z OpenStreetMap: kościoły, kaplice,
+          kapliczki i świątynie wszystkich wyznań. Gęstość per gmina, enklawy prawosławia
+          i protestantyzmu, mozaika wyznań Polski — bez iluzji, po prostu przestrzeń, w której żyjemy.
+        </p>
+        <div class="card-metrics">
+          <div class="metric-pill">⛪ <strong>23 382</strong> Obiektów kultu</div>
+          <div class="metric-pill">🏛️ <strong>14 202</strong> Kościołów</div>
+          <div class="metric-pill">🗺️ <strong>2 476</strong> Gmin z obiektami</div>
+          <div class="metric-pill">🧭 <strong>90%</strong> Udział katolickich</div>
+        </div>
+      </div>
+      <div class="card-cta" style="background: linear-gradient(135deg, rgba(245,158,11,0.2) 0%, rgba(168,85,247,0.2) 100%); border: 1px solid rgba(245,158,11,0.4); color: #FBBF24;">
+        <span>Otwórz Atlas Sakralny</span>
+        <span class="cta-arrow-icon">➔</span>
+      </div>
+    </a>
+
   </main>  <!-- FOOTER -->
   <footer class="portal-footer">
     <div class="footer-dots">
-      <span>4 Analizy Przestrzenne</span>
+      <span>5 Analiz Przestrzennych</span>
       <span>•</span>
       <span>2 479 Gmin</span>
       <span>•</span>
