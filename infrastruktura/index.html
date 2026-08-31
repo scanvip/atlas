@@ -232,9 +232,10 @@ section:nth-child(even) { background-color: var(--bg-secondary); }
     <a href="#sec-zdarzenia">2. Otwarcia vs zamknięcia</a>
     <a href="#sec-mapa">3. Mapa gmin</a>
     <a href="#sec-top">4. Rankingi</a>
-    <a href="#sec-biblioteki">5. Biblioteki</a>
-    <a href="#sec-zlobki">6. Żłobki</a>
-    <a href="#sec-metodyka">7. Metodyka</a>
+    <a href="#sec-ryzyko">5. Ryzyko 2030</a>
+    <a href="#sec-biblioteki">6. Biblioteki</a>
+    <a href="#sec-zlobki">7. Żłobki</a>
+    <a href="#sec-metodyka">8. Metodyka</a>
   </div>
 </nav>
 
@@ -352,6 +353,8 @@ section:nth-child(even) { background-color: var(--bg-secondary); }
       <button class="mc-btn" data-mode="znet">Przedszkola: saldo netto</button>
       <button class="mc-btn" data-mode="pcl">Podstawówki: zamknięcia</button>
       <button class="mc-btn" data-mode="ucz">Uczniowie podstawówek: zmiana %</button>
+      <button class="mc-btn" data-mode="bib">Biblioteki: netto 1995→2025</button>
+      <button class="mc-btn" data-mode="zlb">Gminy bez żłobka (2025)</button>
     </div>
     <div style="position:relative;">
       <div id="map"></div>
@@ -388,11 +391,46 @@ section:nth-child(even) { background-color: var(--bg-secondary); }
   </div>
 </section>
 
-<!-- 5. BIBLIOTEKI -->
+<!-- 5. INDEKS RYZYKA 2030 -->
+<section id="sec-ryzyko">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Część 5 · Prognoza</div>
+      <h2 class="section-title">Indeks ryzyka 2030: które podstawówki znikną jako następne</h2>
+      <p class="section-desc">
+        Model ekstrapoluje trend uczniów 2017→2025 na 2030 r. i liczy prognozowaną liczbę
+        uczniów per szkołę. Gminy, w których średnia spadnie poniżej progu rentowności (~70 uczniów),
+        będą musiały łączyć lub zamykać szkoły. Uwaga: model ilustracyjny, nie uwzględnia
+        migracji ani polityki gmin.
+      </p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">⚠️ Gminy o najwyższym ryzyku (top 15)</div>
+        <div class="data-table-wrapper">
+          <table class="data-table" id="tbl-ryzyko"></table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Skala zjawiska</div>
+        <div class="chart-box" style="min-height:300px;"><canvas id="chart-ryzyko"></canvas></div>
+        <p style="color:var(--text-muted);font-size:0.9rem;margin-top:1rem;" id="ryzyko-fakty"></p>
+      </div>
+    </div>
+    <div class="callout warn">
+      <strong>Interpretacja:</strong> ryzykowna gmina to nie tylko ta, która traci uczniów,
+      ale ta, która ma <em>mało szkół</em> i <em>mało uczniów na szkołę</em> — jedna likwidacja
+      oznacza tam koniec lokalnej edukacji. Duże miasta radzą sobie konsolidacją; gminy
+      wiejskie stają przed wyborem: dojazdy czy puste budynki.
+    </div>
+  </div>
+</section>
+
+<!-- 6. BIBLIOTEKI -->
 <section id="sec-biblioteki">
   <div class="container">
     <div class="section-header">
-      <div class="section-tag">Część 5 · Kultura · 1995–2025</div>
+      <div class="section-tag">Część 6 · Kultura · 1995–2025</div>
       <h2 class="section-title">Biblioteki: 30 lat cichego znikania</h2>
       <p class="section-desc">
         Biblioteki i filie w gminach według GUS BDL — najdłuższa seria czasowa w Atlasie.
@@ -419,7 +457,7 @@ section:nth-child(even) { background-color: var(--bg-secondary); }
 <section id="sec-zlobki">
   <div class="container">
     <div class="section-header">
-      <div class="section-tag">Część 6 · Opieka · 2012–2025</div>
+      <div class="section-tag">Część 7 · Opieka · 2012–2025</div>
       <h2 class="section-title">Żłobki: ekspansja, która pójdzie w odwrot</h2>
       <p class="section-desc">
         Ustawa żłobkowa (2011) uruchomiła boom: kluby dziecięce, dotacje, program "Aktywny rodzic".
@@ -445,7 +483,7 @@ section:nth-child(even) { background-color: var(--bg-secondary); }
 <section id="sec-metodyka">
   <div class="container">
     <div class="section-header">
-      <div class="section-tag">Część 7 · Źródła</div>
+      <div class="section-tag">Część 8 · Źródła</div>
       <h2 class="section-title">Metodyka i ograniczenia</h2>
     </div>
     <div class="grid-2">
@@ -478,7 +516,12 @@ section:nth-child(even) { background-color: var(--bg-secondary); }
           (2019, wcielona do Drawska Pomorskiego) — jedyny przypadek "straty wszystkich placówek".<br><br>
           <strong style="color:#FFF;">GUS BDL:</strong> biblioteki (kategoria P1688, zmienna 1230 "biblioteki i filie")
           i żłobki (P3219, zmienna 377234) pobrane z API Banku Danych Lokalnych na poziomie gmin.
-          Serie: biblioteki 1995–2025, żłobki 2012–2025.
+          Serie: biblioteki 1995–2025, żłobki 2012–2025.<br><br>
+          <strong style="color:#FFF;">Indeks ryzyka 2030 (model ilustracyjny):</strong> ekstrapolacja trendu
+          uczniów 2017→2025 per gmina (50% lokalnego tempa) plus korekta demograficzna (−18% — wejście
+          roczników 2019–2024 zapaści urodzeń). Ryzyko rośnie, gdy prognozowana liczba uczniów per szkoła
+          spada poniżej 70 (próg rentowności szkół małych). Model nie uwzględnia migracji ani
+          indywidualnych decyzji gmin o łączeniu szkół.
         </p>
       </div>
     </div>
@@ -648,6 +691,9 @@ function renderTables() {
 // ── Mapa ──
 function valFor(t, mode) {
   const g = D.gminy[t];
+  const b = (typeof INFRA_BDL !== 'undefined' && INFRA_BDL.gminy) ? INFRA_BDL.gminy[t] : null;
+  if (mode === 'bib') return b ? b.bib_net : null;
+  if (mode === 'zlb') return b ? b.zlb25 : null;
   if (!g) return null;
   switch (mode) {
     case 'pnet': return g.pnet;
@@ -659,6 +705,21 @@ function valFor(t, mode) {
 
 function colorFor(v, mode) {
   if (v === null || v === undefined) return { fill: 'rgba(100,116,139,0.15)', stroke: 'rgba(100,116,139,0.3)' };
+  if (mode === 'zlb') {
+    // binarnie: brak żłobka vs ma żłobek
+    if (v === 0) return { fill: 'rgba(239,68,68,0.55)', stroke: 'rgba(239,68,68,0.8)' };
+    if (v === 1) return { fill: 'rgba(245,158,11,0.35)', stroke: 'rgba(245,158,11,0.6)' };
+    if (v === 2) return { fill: 'rgba(16,185,129,0.3)', stroke: 'rgba(16,185,129,0.6)' };
+    return { fill: 'rgba(16,185,129,0.55)', stroke: 'rgba(16,185,129,0.85)' };
+  }
+  if (mode === 'bib') {
+    if (v < 0) {
+      if (v <= -3) return { fill: 'rgba(168,85,247,0.75)', stroke: 'rgba(168,85,247,0.95)' };
+      return { fill: 'rgba(168,85,247,0.4)', stroke: 'rgba(168,85,247,0.65)' };
+    }
+    if (v === 0) return { fill: 'rgba(100,116,139,0.2)', stroke: 'rgba(100,116,139,0.4)' };
+    return { fill: 'rgba(16,185,129,0.5)', stroke: 'rgba(16,185,129,0.75)' };
+  }
   if (mode === 'ucz') {
     if (v <= -30) return { fill: 'rgba(239,68,68,0.75)', stroke: 'rgba(239,68,68,0.9)' };
     if (v <= -20) return { fill: 'rgba(239,68,68,0.5)', stroke: 'rgba(239,68,68,0.7)' };
@@ -688,7 +749,21 @@ function colorFor(v, mode) {
 
 function legendFor(mode) {
   const el = document.getElementById('map-legend');
-  if (mode === 'ucz') {
+  if (mode === 'bib') {
+    el.innerHTML = `
+      <b style="color:#F8FAFC;">Biblioteki: netto 1995→2025</b><br>
+      <span class="legend-band" style="background:rgba(168,85,247,0.75)"></span> ≤ −3<br>
+      <span class="legend-band" style="background:rgba(168,85,247,0.4)"></span> −1…−2<br>
+      <span class="legend-band" style="background:rgba(100,116,139,0.2)"></span> 0<br>
+      <span class="legend-band" style="background:rgba(16,185,129,0.5)"></span> przyrost`;
+  } else if (mode === 'zlb') {
+    el.innerHTML = `
+      <b style="color:#F8FAFC;">Żłobki w gminie (2025)</b><br>
+      <span class="legend-band" style="background:rgba(239,68,68,0.55)"></span> brak żłobka<br>
+      <span class="legend-band" style="background:rgba(245,158,11,0.35)"></span> 1<br>
+      <span class="legend-band" style="background:rgba(16,185,129,0.3)"></span> 2<br>
+      <span class="legend-band" style="background:rgba(16,185,129,0.55)"></span> ≥ 3`;
+  } else if (mode === 'ucz') {
     el.innerHTML = `
       <b style="color:#F8FAFC;">Zmiana uczniów 2017→2025</b><br>
       <span class="legend-band" style="background:rgba(239,68,68,0.75)"></span> ≤ −30%<br>
@@ -735,12 +810,14 @@ function renderMap() {
       if (!g) return;
       const nazwa = D.nazwy[t] || feature.properties.NAME_3;
       const uczDelta = g.ucz17 > 0 ? ((g.ucz25 - g.ucz17) / g.ucz17 * 100).toFixed(1) : '—';
+      const bdlG = (typeof INFRA_BDL !== 'undefined' && INFRA_BDL.gminy) ? INFRA_BDL.gminy[t] : null;
+      const bdlInfo = bdlG ? `<br>Biblioteki: ${bdlG.bib95} → ${bdlG.bib25} (${bdlG.bib_net >= 0 ? '+' : ''}${bdlG.bib_net})<br>Żłobki 2025: ${bdlG.zlb25}` : '';
       layer.bindPopup(`
         <b>${nazwa}</b><br>
         Podstawówki: <b>${g.p17}</b> → <b>${g.p25}</b> (${g.pnet >= 0 ? '+' : ''}${g.pnet})<br>
         Przedszkola: ${g.z17} → ${g.z25} (${g.znet >= 0 ? '+' : ''}${g.znet})<br>
         Zamknięte/otwarte P.: ${g.pcl} / ${g.pop}<br>
-        Uczniowie P.: ${fmtAbs(g.ucz17)} → ${fmtAbs(g.ucz25)} (${uczDelta}%)
+        Uczniowie P.: ${fmtAbs(g.ucz17)} → ${fmtAbs(g.ucz25)} (${uczDelta}%)${bdlInfo}
       `);
       layer.on({
         mouseover: e => { e.target.setStyle({ weight: 2.2, color: '#F8FAFC' }); e.target.bringToFront(); },
@@ -859,7 +936,65 @@ function renderBDL(b) {
   }
 }
 
+// ── Indeks ryzyka 2030 ──
+function renderRyzyko() {
+  const rows = [];
+  for (const [t, g] of Object.entries(D.gminy)) {
+    if (g.p25 === 0 || g.ucz17 === 0) continue;
+    // trend lokalny uczniów 2017->2025 (roczny)
+    const rokDelta = (g.ucz25 - g.ucz17) / 8;
+    // projekcja 2030: trend lokalny + korekta demograficzna (roczniki 2019-2024, zapaść urodzeń)
+    const ucz2030 = Math.max(0, g.ucz25 * 0.82 + rokDelta * 5 * 0.5);
+    const perSzkola2030 = ucz2030 / g.p25;
+    const perSzkola2025 = g.ucz25 / g.p25;
+    // ryzyko 0-100: silnie rosnie gdy perSzkola2030 < 70, dodatkowo trend lokalny
+    let risk = 0;
+    if (perSzkola2030 < 70) risk += (70 - perSzkola2030) / 70 * 70;
+    if (perSzkola2025 < 100) risk += (100 - perSzkola2025) / 100 * 15;
+    if (g.ucz25 < g.ucz17) risk += 15;
+    risk = Math.min(100, Math.round(risk));
+    rows.push({ t, nazwa: D.nazwy[t] || t, risk, ucz25: g.ucz25, ucz17: g.ucz17, ucz2030: Math.round(ucz2030), p25: g.p25, perSzkola2030: Math.round(perSzkola2030) });
+  }
+  rows.sort((a, b) => b.risk - a.risk);
+
+  const t = document.getElementById('tbl-ryzyko');
+  t.innerHTML = '<tr><th>Gmina</th><th>Uczniowie 2025</th><th>Prognoza 2030</th><th>Szkoły</th><th>Ucz./szk. 2030</th><th>Ryzyko</th></tr>';
+  for (const r of rows.slice(0, 15)) {
+    const cls = r.risk >= 70 ? 'neg' : r.risk >= 40 ? 'pos' : 'zero';
+    t.innerHTML += `<tr><td>${r.nazwa}</td><td>${fmtAbs(r.ucz25)}</td><td>${fmt(r.ucz2030 - r.ucz25)}</td><td>${r.p25}</td><td class="${r.perSzkola2030 < 70 ? 'neg' : ''}">${r.perSzkola2030}</td><td class="${cls}" style="font-weight:800;">${r.risk}</td></tr>`;
+  }
+
+  const wysokich = rows.filter(r => r.risk >= 70).length;
+  const srednich = rows.filter(r => r.risk >= 40 && r.risk < 70).length;
+  document.getElementById('ryzyko-fakty').innerHTML =
+    `<strong style="color:var(--accent-red);">${wysokich}</strong> gmin z bardzo wysokim ryzykiem (≥70 pkt) —
+     to kandydaci na likwidację ostatniej podstawówki przed 2030.
+     Kolejne <strong style="color:var(--accent-amber);">${srednich}</strong> gmin w strefie ostrzegawczej (40–69 pkt).`;
+
+  new Chart(document.getElementById('chart-ryzyko'), {
+    type: 'bar',
+    data: {
+      labels: ['Ryzyko 0–39', '40–69', '70–100'],
+      datasets: [{
+        label: 'Liczba gmin',
+        data: [rows.filter(r => r.risk < 40).length, srednich, wysokich],
+        backgroundColor: ['rgba(16,185,129,0.6)', 'rgba(245,158,11,0.6)', 'rgba(239,68,68,0.7)'],
+        borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#64748B' }, grid: { color: 'rgba(30,42,74,0.4)' } },
+        y: { ticks: { color: '#64748B' }, grid: { color: 'rgba(30,42,74,0.4)' } }
+      }
+    }
+  });
+}
+
 boot().then(() => {
+  renderRyzyko();
   // Dane BDL (biblioteki, żłobki) — opcjonalne rozszerzenie
   const bdl = (typeof INFRA_BDL !== 'undefined') ? Promise.resolve(INFRA_BDL)
     : fetch('infra_bdl.min.json').then(r => r.ok ? r.json() : null).catch(() => null);
