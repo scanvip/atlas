@@ -355,6 +355,15 @@
     color: #FFF !important;
   }
 
+  .card-zabory::before {
+    background: linear-gradient(90deg, #2E5E4E, #D4A017, #7A4B3A);
+  }
+  .card-zabory:hover .card-cta {
+    background: linear-gradient(135deg, #2E5E4E, #D4A017) !important;
+    border-color: transparent !important;
+    color: #FFF !important;
+  }
+
   /* ── FOOTER ── */
   .portal-footer {
     text-align: center;
@@ -380,6 +389,7 @@
     .footer-dots { flex-direction: column; gap: 0.4rem; }
   }
 </style>
+<meta property="og:type" content="website"><meta property="og:title" content="Atlas Polska — Portal Analiz Przestrzennych & Prognoz"><meta property="og:description" content="Zintegrowany portal interaktywnych analiz: geografia wyborcza 2001–2027, demografia, infrastruktura społeczna, mapa sakralna. 2 479 gmin."><meta property="og:url" content="https://atlas.scanvip.workers.dev/"><meta property="og:image" content="https://atlas.scanvip.workers.dev/og-image.png"><meta property="og:locale" content="pl_PL"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Atlas Polska — Portal Analiz Przestrzennych & Prognoz"><meta name="twitter:description" content="Zintegrowany portal interaktywnych analiz: geografia wyborcza 2001–2027, demografia, infrastruktura społeczna, mapa sakralna. 2 479 gmin."><meta name="twitter:image" content="https://atlas.scanvip.workers.dev/og-image.png">
 </head>
 <body>
 
@@ -545,10 +555,36 @@
       </div>
     </a>
 
+    <!-- KARTA 6: POLSKA A I B — ZABORY -->
+    <a href="zabory/index.html" class="glass-card card-zabory">
+      <div>
+        <div class="card-header">
+          <div class="card-icon">🧭</div>
+          <div class="card-tag" style="color:#D4A017;">Historia w danych · 1815→2026</div>
+          <h2 class="card-title">Polska A i B: Cień Zaborów</h2>
+        </div>
+        <p class="card-desc">
+          Granice zaborów zniknęły w 1918 — ale czy zniknęły z danych? Frekwencja 2023,
+          gminy-flip, zamykane szkoły i biblioteki nakładamy na podział pruski–rosyjski–austriacki.
+          2 479 gmin, 66 testów poprawności: zero błędów.
+        </p>
+        <div class="card-metrics">
+          <div class="metric-pill">🟢 <strong>1 105</strong> Gmin zab. pruskiego</div>
+          <div class="metric-pill">🐻 <strong>994</strong> Gmin zab. rosyjskiego</div>
+          <div class="metric-pill">👑 <strong>380</strong> Gmin zab. austriackiego</div>
+          <div class="metric-pill">🔄 <strong>0</strong> Flipów w Galicji</div>
+        </div>
+      </div>
+      <div class="card-cta" style="background: linear-gradient(135deg, rgba(46,94,78,0.25) 0%, rgba(212,160,23,0.25) 100%); border: 1px solid rgba(212,160,23,0.4); color: #D4C05A;">
+        <span>Otwórz Analizę Zaborów</span>
+        <span class="cta-arrow-icon">➔</span>
+      </div>
+    </a>
+
   </main>  <!-- FOOTER -->
   <footer class="portal-footer">
     <div class="footer-dots">
-      <span>5 Analiz Przestrzennych</span>
+      <span>6 Analiz Przestrzennych</span>
       <span>•</span>
       <span>2 479 Gmin</span>
       <span>•</span>

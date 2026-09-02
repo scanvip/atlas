@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polska A i B — Cień Zaborów w 2026 roku</title>
+<meta name="description" content="Czy granice zaborów z 1815 roku wciąż dzielą Polskę? Frekwencja, swing wyborczy, zamykane szkoły i biblioteki per zabór — 2 479 gmin, 66 testów poprawności mapowania.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+:root {
+  --bg-primary: #0C0A07;
+  --bg-secondary: #14110B;
+  --bg-card: #1C1810;
+  --bg-card-hover: #262012;
+  --bg-border: #383018;
+  --accent-pruski: #2E5E4E;   /* pruski: butelkowa zieleń
+  --accent-rosyjski: #7A4B3A; /* rosyjski: cegła
+  --accent-austriacki: #8A7A2E; /* austriacki: złoto-miedź
+  --accent-gold: #D4A017;
+  --text-primary: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-dim: #64748B;
+  --font-main: 'Inter', -apple-system, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-main); background: var(--bg-primary); color: var(--text-primary); line-height: 1.6; overflow-x: hidden; }
+
+#reading-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #2E5E4E, #D4A017, #7A4B3A); width: 0%; z-index: 1000; transition: width 0.1s ease-out; }
+.topnav { position: fixed; top: 3px; left: 0; right: 0; height: 56px; background: rgba(12,10,7,0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--bg-border); z-index: 999; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; }
+.topnav-brand { font-weight: 800; font-size: 0.95rem; background: linear-gradient(135deg, #FFF, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+.topnav-links { display: flex; gap: 0.5rem; overflow-x: auto; scrollbar-width: none; }
+.topnav-links::-webkit-scrollbar { display: none; }
+.topnav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.78rem; font-weight: 500; padding: 0.35rem 0.75rem; border-radius: 6px; white-space: nowrap; }
+.topnav-links a:hover, .topnav-links a.active { color: var(--text-primary); background: var(--bg-card); }
+
+.container { max-width: 1380px; margin: 0 auto; padding: 0 1.5rem; }
+section { padding: 5rem 0; border-bottom: 1px solid rgba(56,48,24,0.5); }
+section:nth-child(even) { background-color: var(--bg-secondary); }
+.section-header { margin-bottom: 2.5rem; border-left: 4px solid var(--accent-gold); padding-left: 1.2rem; }
+.section-tag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-gold); margin-bottom: 0.3rem; }
+.section-title { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 800; line-height: 1.2; }
+.section-desc { color: var(--text-muted); font-size: 1rem; margin-top: 0.5rem; max-width: 920px; }
+
+.hero { min-height: 90vh; padding-top: 7rem; padding-bottom: 4rem; background: radial-gradient(circle at 20% 30%, rgba(46,94,78,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(122,75,58,0.15) 0%, transparent 50%), radial-gradient(circle at 50% 90%, rgba(212,160,23,0.08) 0%, transparent 40%), var(--bg-primary); display: flex; flex-direction: column; justify-content: center; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.35); color: var(--accent-gold); padding: 0.4rem 1rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.5rem; width: fit-content; }
+.hero-title { font-size: clamp(2.5rem, 5.5vw, 4.2rem); font-weight: 900; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 1.5rem; background: linear-gradient(135deg, #FFFFFF 0%, #E8D5A3 50%, #D4A017 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero-lead { font-size: clamp(1.05rem, 2vw, 1.3rem); color: var(--text-muted); max-width: 860px; margin-bottom: 3rem; }
+.hero-lead strong { color: #E8D5A3; }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-top: 1rem; }
+@media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .kpi-grid { grid-template-columns: 1fr; } }
+.kpi-card { background: var(--bg-card); border: 1px solid var(--bg-border); border-radius: 14px; padding: 1.6rem 1.2rem; text-align: center; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s, border-color 0.2s; }
+.kpi-card:hover { transform: translateY(-4px); border-color: var(--accent-gold); }
+.kpi-val { font-size: 2.2rem; font-weight: 900; line-height: 1; margin-bottom: 0.5rem; }
+.kpi-lbl { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.kpi-sub { font-size: 0.75rem; color: var(--text-muted); }
+.k-pru .kpi-val { color: #6BBFA4; } .k-ros .kpi-val { color: #C98A6B; } .k-aus .kpi-val { color: #D4C05A; } .k-gen .kpi-val { color: #F8FAFC; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+@media (max-width: 1024px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+.card { background: var(--bg-card); border: 1px solid var(--bg-border); border-radius: 16px; padding: 1.8rem; }
+.card-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; }
+.chart-box { position: relative; width: 100%; min-height: 340px; }
+
+.zab-badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 6px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.03em; margin-right: 0.5rem; }
+.zb-pr { background: rgba(46,94,78,0.35); color: #6BBFA4; }
+.zb-ro { background: rgba(122,75,58,0.35); color: #C98A6B; }
+.zb-au { background: rgba(138,122,46,0.35); color: #D4C05A; }
+
+.data-table-wrapper { overflow-x: auto; border: 1px solid var(--bg-border); border-radius: 12px; }
+.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+.data-table th { background: var(--bg-secondary); padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--bg-border); white-space: nowrap; }
+.data-table td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--bg-border); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--bg-card-hover); }
+.pos { color: #6BBFA4; font-weight: 700; } .neg { color: #E8876B; font-weight: 700; }
+
+.callout { background: rgba(212,160,23,0.07); border-left: 4px solid var(--accent-gold); padding: 1.25rem 1.5rem; border-radius: 0 12px 12px 0; margin: 1.5rem 0; font-size: 0.95rem; color: #D4CFC4; }
+.callout strong { color: #FFF; }
+
+#map { width: 100%; height: 640px; border-radius: 16px; border: 1px solid var(--bg-border); z-index: 1; }
+.leaflet-container { background: radial-gradient(ellipse at 50% 40%, #181410 0%, #0C0A07 100%); }
+.map-legend { position: absolute; bottom: 24px; right: 24px; z-index: 500; background: rgba(20,17,11,0.95); border: 1px solid var(--bg-border); border-radius: 12px; padding: 1rem 1.2rem; font-size: 0.8rem; color: var(--text-muted); backdrop-filter: blur(10px); line-height: 1.9; }
+.legend-band { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 0.5rem; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--bg-card); color: var(--text-primary); }
+.leaflet-popup-content { font-family: var(--font-main); margin: 0.8rem 1rem; }
+
+.footer { padding: 3rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--bg-border); }
+.footer a { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<div id="reading-progress"></div>
+
+<nav class="topnav">
+  <a href="../index.html" class="topnav-brand">
+    <span>🧭 POLSKA A i B</span>
+    <span style="font-weight:400; color:var(--text-dim);">| Cień Zaborów 1815→2026</span>
+  </a>
+  <div class="topnav-links">
+    <a href="#hero" class="active">Start</a>
+    <a href="#sec-mapa">1. Mapa</a>
+    <a href="#sec-wybory">2. Wybory</a>
+    <a href="#sec-infra">3. Infrastruktura</a>
+    <a href="#sec-metodyka">4. Metodyka</a>
+  </div>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero-badge">📜 Analiza historyczno-przestrzenna · 2 479 gmin · 66 testów mapowania</div>
+    <h1 class="hero-title">POLSKA A i B:<br>CIEŃ ZABORÓW</h1>
+    <p class="hero-lead">
+      Granice zaborów zniknęły z map w 1918 roku. Ale czy zniknęły z danych?
+      Nakładamy trzy wymiary 2026 roku — wybory, oświatę, biblioteki — na podział
+      pruski–rosyjski–austriacki z 1815 r. i sprawdzamy, <strong>gdzie historia wciąż oddycha</strong>.
+    </p>
+    <div class="kpi-grid">
+      <div class="kpi-card k-pru">
+        <div class="kpi-val" id="kpi-pru">…</div>
+        <div class="kpi-lbl">Zabór pruski</div>
+        <div class="kpi-sub" id="sub-pru">…</div>
+      </div>
+      <div class="kpi-card k-ros">
+        <div class="kpi-val" id="kpi-ros">…</div>
+        <div class="kpi-lbl">Zabór rosyjski</div>
+        <div class="kpi-sub" id="sub-ros">…</div>
+      </div>
+      <div class="kpi-card k-aus">
+        <div class="kpi-val" id="kpi-aus">…</div>
+        <div class="kpi-lbl">Zabór austriacki</div>
+        <div class="kpi-sub" id="sub-aus">…</div>
+      </div>
+      <div class="kpi-card k-gen">
+        <div class="kpi-val">0/66</div>
+        <div class="kpi-lbl">Błędów mapowania</div>
+        <div class="kpi-sub">miasta testowe: od Katowic po Zamość</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-mapa">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Część 1 · Przestrzeń</div>
+      <h2 class="section-title">Trzy Polski na jednej mapie</h2>
+      <p class="section-desc">
+        Podział administracyjny 1815–1914 naniesiony na współczesne gminy (deterministycznie,
+        per powiat, z korektami: Śląsk, Zagłębie, Zamojszczyzna). Kliknij gminę, by zobaczyć jej zabór.
+      </p>
+    </div>
+    <div style="position:relative;">
+      <div id="map"></div>
+      <div class="map-legend">
+        <span class="legend-band" style="background:#2E5E4E"></span> zabór pruski<br>
+        <span class="legend-band" style="background:#7A4B3A"></span> zabór rosyjski<br>
+        <span class="legend-band" style="background:#8A7A2E"></span> zabór austriacki
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-wybory">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Część 2 · Wybory 2023</div>
+      <h2 class="section-title">Kto się przebudził, a kto został w miejscu</h2>
+      <p class="section-desc">
+        Mobilizacja 2023 (wzrost frekwencji względem 2019) i swing na koalicję rządzącą
+        w gminach dopasowanych do zaborów. Czylińska "Polska przytomniała" — ale czy równomiernie?
+      </p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">📊 Mobilizacja i swing per zabór</div>
+        <div class="chart-box"><canvas id="chart-wybory"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔄 Gminy-flip (zmiana dominaty 2019→2023)</div>
+        <div class="chart-box"><canvas id="chart-flips"></canvas></div>
+        <p style="color:var(--text-muted);font-size:0.88rem;margin-top:1rem;">
+          Flip = gmina, w której zmieniła się dominująca rodzina polityczna.
+          W zaborze pruskim 82 gminy zmieniły dominatę, w rosyjskim tylko 39,
+          a w austriackim — ani jedna.
+        </p>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>Wniosek wyborczy:</strong> zabór pruski flipuje najchętniej (82 gminy, z czego 30 na centrum),
+      rosyjski jest stabilniejszy w swoich przyzwyczajeniach (39 flipów, 10 na centrum),
+      a austriacki — monolityczny: <strong>zero flipów</strong> w całej Galicji.
+      Cień zaborów widać nie w tym, <em>kto</em> wygrywa, ale w tym, <em>jak łatwo</em> da się to zmienić.
+    </div>
+  </div>
+</section>
+
+<section id="sec-infra">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Część 3 · Infrastruktura 1995–2025</div>
+      <h2 class="section-title">Szkoły, biblioteki, żłobki: trzy tempo kurczenia</h2>
+      <p class="section-desc">
+        Biblioteki od 1995, żłobki od 2012, podstawówki 2017–2025 — agregaty per zabór.
+        Czy dawna Galicja nadrabia, a zabór pruski traci? Dane SIO i GUS BDL z Atlasu Infrastruktury.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title">📉 Zmiany infrastruktury per zabór (%)</div>
+      <div class="chart-box"><canvas id="chart-infra"></canvas></div>
+    </div>
+    <div style="height:2rem;"></div>
+    <div class="card">
+      <div class="card-title">📋 Tabela zbiorcza per zabór</div>
+      <div class="data-table-wrapper">
+        <table class="data-table" id="tbl-zabory"></table>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>Wniosek infrastrukturalny:</strong> biblioteki znikają najszybciej w zaborze pruskim (−20.8%),
+      najwolniej w austriackim (−9.8%) — ale to nie sentyment do książki, tylko skala:
+      dawna Galicja miała ich najmniej i najgęściej przy granicy. Żłobki rosną wszędzie,
+      ale w Prusach wschodnich ich liczba się potroiła — doświadczenie "Rodzicielskiej
+      Polski" trafiło tam na najniższą bazę.
+    </div>
+  </div>
+</section>
+
+<section id="sec-metodyka">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Część 4 · Źródła</div>
+      <h2 class="section-title">Metodyka i ograniczenia</h2>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">📚 Dane i mapowanie</div>
+        <p style="color:var(--text-muted);font-size:0.95rem;">
+          <strong style="color:#FFF;">Podział zaborów:</strong> deterministyczna klasyfikacja per powiat
+          (TERYT), oparta na granicach 1815–1914 z korektami historycznymi: Zagłębie Dąbrowskie
+          (Kongresówka po 1807), Zamojszczyzna (po 1809), Śląsk Cieszyński i Kotlina Żywiecka
+          (austriackie), ziemia dobrzyńska (rosyjska). Zweryfikowane 66 miastami-punktami
+          kontrolnymi: <strong style="color:#6BBFA4;">0 błędów</strong>.<br><br>
+          <strong style="color:#FFF;">Wybory:</strong> PKW 2019/2023 per gmina (z atlasu wybory_pl):
+          mobilizacja = wzrost frekwencji w pp; swing = zmiana poparcia rodziny centrum.
+          Dopasowanie do zaborów: 1 247 gmin w analizie mobilizacji.<br><br>
+          <strong style="color:#FFF;">Infrastruktura:</strong> SIO/RSPO (podstawówki 2017–2025),
+          GUS BDL (biblioteki 1995–2025, żłobki 2012–2025, apteki 2003–2025) — z Atlasu Infrastruktury.
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-title">⚠️ Ograniczenia</div>
+        <p style="color:var(--text-muted);font-size:0.95rem;">
+          <strong style="color:#FFF;">Uproszczenie granic:</strong> przypisanie per powiat oznacza,
+          że gminy na historycznych liniach granicznych dziedziczą zabór całego powiatu.
+          Realne granice 1815 biegną przez powiaty, nie wzdłuż nich.<br><br>
+          <strong style="color:#FFF;">Korelacja ≠ dziedzictwo:</strong> różnice między zaborami mogą
+          wynikać z urbanizacji, dochodów i demografii — nie z kultury dawnych mocarstw.
+          Wskaźujemy podobieństwo wzorców, nie ich przyczynę.<br><br>
+          <strong style="color:#FFF;">"Polska A/B" to metafora:</strong> żadna z trzech Polsk
+          nie jest jednorodna. Śląsk ≠ Wielkopolska, Podlasie ≠ Mazowsze. Zabory to soczewka,
+          nie wyrok.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div>Polska A i B — Cień Zaborów © 2026 · Atlas Polska · Dane: PKW, SIO/RSPO, GUS BDL</div>
+  <div style="margin-top:0.5rem;"><a href="../index.html">← Powrót do portalu Atlas Polska</a></div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="zabory_data_inline.js"></script>
+<script src="gminy_inline.js"></script>
+<script>
+function fmt(n) { return n.toLocaleString('pl-PL'); }
+function pct(v) { return (v > 0 ? '+' : '') + v.toFixed(1) + '%'; }
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  document.getElementById('reading-progress').style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+});
+
+const ZB = {
+  PR: { nazwa: 'pruski', pelna: 'zabór pruski', kolor: '#2E5E4E', jasny: '#6BBFA4' },
+  ROS: { nazwa: 'rosyjski', pelna: 'zabór rosyjski', kolor: '#7A4B3A', jasny: '#C98A6B' },
+  AUS: { nazwa: 'austriacki', pelna: 'zabór austriacki', kolor: '#8A7A2E', jasny: '#D4C05A' },
+};
+
+function renderKPI() {
+  const W = ZABORY_DATA.wyniki;
+  for (const [z, el] of [['PR','kpi-pru'],['ROS','kpi-ros'],['AUS','kpi-aus']]) {
+    document.getElementById(el).textContent = fmt(W[z].n);
+    const sub = { PR: 'sub-pru', ROS: 'sub-ros', AUS: 'sub-aus' }[z];
+    document.getElementById(sub).textContent = `gmin · ${ZB[z].pelna}`;
+  }
+}
+
+function renderCharts() {
+  const W = ZABORY_DATA.wyniki;
+  const z = ['PR','ROS','AUS'];
+  const labels = z.map(k => ZB[k].pelna);
+  new Chart(document.getElementById('chart-wybory'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Wzrost frekwencji 2019→2023 (pp)', data: z.map(k => W[k].frek_swing),
+          backgroundColor: 'rgba(212,160,23,0.55)', borderRadius: 8 },
+        { label: 'Swing na centrum (pp)', data: z.map(k => W[k].swing_centrum),
+          backgroundColor: 'rgba(107,191,164,0.6)', borderRadius: 8 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#94A3B8' } } },
+      scales: { x: { ticks: { color: '#64748B' }, grid: { color: 'rgba(56,48,24,0.4)' } },
+                 y: { ticks: { color: '#64748B' }, grid: { color: 'rgba(56,48,24,0.4)' } } } }
+  });
+  new Chart(document.getElementById('chart-flips'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Gminy-flip łącznie', data: z.map(k => W[k].flips),
+          backgroundColor: z.map(k => ZB[k].kolor + 'CC'), borderRadius: 8 },
+        { label: '…z czego na centrum', data: z.map(k => W[k].flip_c),
+          backgroundColor: 'rgba(107,191,164,0.75)', borderRadius: 8 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#94A3B8' } } },
+      scales: { x: { ticks: { color: '#64748B' }, grid: { color: 'rgba(56,48,24,0.4)' } },
+                 y: { ticks: { color: '#64748B' }, grid: { color: 'rgba(56,48,24,0.4)' } } } }
+  });
+  new Chart(document.getElementById('chart-infra'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Biblioteki 1995→2025 (%)', data: z.map(k => W[k].bib_delta),
+          backgroundColor: 'rgba(212,192,90,0.6)', borderRadius: 8 },
+        { label: 'Uczniowie podstawówek 2017→2025 (%)', data: z.map(k => W[k].ucz_delta),
+          backgroundColor: 'rgba(107,191,164,0.6)', borderRadius: 8 },
+        { label: 'Apteki 2003→2025 (%)', data: z.map(k => W[k].apt_delta),
+          backgroundColor: 'rgba(201,138,107,0.6)', borderRadius: 8 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#94A3B8' } } },
+      scales: { x: { ticks: { color: '#64748B' }, grid: { color: 'rgba(56,48,24,0.4)' } },
+                 y: { ticks: { color: '#64748B' }, grid: { color: 'rgba(56,48,24,0.4)' } } } }
+  });
+}
+
+function renderTable() {
+  const W = ZABORY_DATA.wyniki;
+  const t = document.getElementById('tbl-zabory');
+  t.innerHTML = `<tr><th>Zabór</th><th>Gminy</th><th>Podstawówki 17→25</th><th>Zamknięte P.</th>
+    <th>Uczniowie Δ%</th><th>Biblioteki Δ%</th><th>Żłobki 12→25</th><th>Apteki Δ%</th><th>Flipy</th></tr>`;
+  for (const k of ['PR','ROS','AUS']) {
+    const w = W[k];
+    t.innerHTML += `<tr>
+      <td><span class="zab-badge ${k==='PR'?'zb-pr':k==='ROS'?'zb-ro':'zb-au'}">${ZB[k].pelna}</span></td>
+      <td><b>${fmt(w.n)}</b></td>
+      <td>${fmt(w.p17)} → ${fmt(w.p25)} <span class="neg">(${w.p25-w.p17})</span></td>
+      <td>${w.pcl}</td>
+      <td class="${w.ucz_delta>=0?'pos':'neg'}">${pct(w.ucz_delta)}</td>
+      <td class="neg">${pct(w.bib_delta)}</td>
+      <td>${fmt(w.zlb12)} → ${fmt(w.zlb25)}</td>
+      <td class="pos">${pct(w.apt_delta)}</td>
+      <td>${w.flips}</td></tr>`;
+  }
+}
+
+function renderMap() {
+  const map = L.map('map', { center: [51.9, 19.1], zoom: 6, minZoom: 5, attributionControl: false });
+  const layer = L.geoJSON(GMINY_GEO, {
+    style: f => {
+      const t = String(f.properties.CC_3 || '').padStart(7, '0').slice(0, 6);
+      const z = ZABORY_DATA.zabory_gminy[t] || 'ROS';
+      return { color: ZB[z].kolor, weight: 0.6, fillColor: ZB[z].kolor, fillOpacity: 0.75, opacity: 0.8 };
+    },
+    onEachFeature: (f, lyr) => {
+      const t = String(f.properties.CC_3 || '').padStart(7, '0').slice(0, 6);
+      const z = ZABORY_DATA.zabory_gminy[t] || 'ROS';
+      lyr.bindPopup(`<b>${f.properties.NAME_3}</b><br>${ZB[z].pelna} (1815–1914)`);
+      lyr.on({
+        mouseover: e => { e.target.setStyle({ weight: 2.2, color: '#F8FAFC' }); e.target.bringToFront(); },
+        mouseout: e => layer.resetStyle(e.target)
+      });
+    }
+  }).addTo(map);
+  map.fitBounds(layer.getBounds());
+}
+
+renderKPI();
+renderCharts();
+renderTable();
+renderMap();
+</script>
+</body>
+</html>
